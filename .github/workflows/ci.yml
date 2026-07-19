@@ -21,7 +21,7 @@ jobs:
 
     steps:
       # Fetch the repository contents so the job has access to the
-      # notebooks, requirements.txt, and the dataset/ directory the
+      # notebooks, requirements.txt, and the data/ directory the
       # notebooks read from via a relative path.
       - name: Check out repository
         uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
           jupyter nbconvert --to notebook --execute \
             --output-dir /tmp/nbconvert-out \
             --output seed_analysis_k_means.out.ipynb \
-            seed_analysis_k_means.ipynb
+            notebooks/seed_analysis_k_means.ipynb
 
       # Execute the DBSCAN notebook the same way, independently of the
       # K-Means notebook (the two are self-contained per the README).
@@ -73,4 +73,4 @@ jobs:
           jupyter nbconvert --to notebook --execute \
             --output-dir /tmp/nbconvert-out \
             --output seed_analysis_dbscan.out.ipynb \
-            seed_analysis_dbscan.ipynb
+            notebooks/seed_analysis_dbscan.ipynb

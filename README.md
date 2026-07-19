@@ -43,7 +43,7 @@ report this repository doesn't currently include.
 ## Overview
 
 This project applies unsupervised clustering to the UCI **seeds** dataset
-(`dataset/seeds_dataset.csv`: 210 wheat kernels, 7 geometric features, 3
+(`data/seeds_dataset.csv`: 210 wheat kernels, 7 geometric features, 3
 known varieties -- Kama, Rosa, Canadian, 70 kernels each, encoded as
 `class` 1/2/3) to see how well each algorithm recovers the true variety
 labels without being told what they are. The 8 columns are `area`,
@@ -51,8 +51,8 @@ labels without being told what they are. The 8 columns are `area`,
 `asymmetry_coef`, `kernel_groove`, and `class`. The work is split across
 two independent, self-contained Jupyter notebooks:
 
-- **`seed_analysis_k_means.ipynb`** (28 cells) -- K-Means clustering. Loads
-  `dataset/seeds_dataset.csv`, does exploratory data analysis (`.head()`,
+- **`notebooks/seed_analysis_k_means.ipynb`** (28 cells) -- K-Means clustering. Loads
+  `data/seeds_dataset.csv`, does exploratory data analysis (`.head()`,
   `.info()`, per-class `.describe()`, KDE distribution plots), removes
   per-class outliers via a z-score threshold (cell 15), computes a Pearson
   correlation heatmap, standardizes features, and reduces dimensionality
@@ -68,7 +68,7 @@ two independent, self-contained Jupyter notebooks:
   hyperparameter search's best silhouette (0.410) and best ARI (0.796)
   both landed on `n_init=10, max_iter=100, tol=1e-4`.
 
-- **`seed_analysis_dbscan.ipynb`** (49 cells) -- DBSCAN clustering. Same
+- **`notebooks/seed_analysis_dbscan.ipynb`** (49 cells) -- DBSCAN clustering. Same
   dataset load and EDA pattern (head/info/value_counts, per-class
   describe, KDE plots, per-class box plots for outlier inspection,
   correlation table). Builds a
@@ -88,14 +88,14 @@ error outputs (K-Means 1-27 with no gaps; DBSCAN 1-34 contiguous, with the
 final two plotting cells at 38/40 from a couple of extra in-place re-runs of
 just those cells), consistent with a full top-to-bottom run each. Their
 embedded kernelspec metadata (`nbformat` 4) both name a `venv` / Python
-3.12.7 kernel, but this only reliably describes `seed_analysis_k_means.ipynb`.
-`seed_analysis_dbscan.ipynb` carries a `"colab"` metadata block
+3.12.7 kernel, but this only reliably describes `notebooks/seed_analysis_k_means.ipynb`.
+`notebooks/seed_analysis_dbscan.ipynb` carries a `"colab"` metadata block
 (`provenance`/`include_colab_link`) not present in the K-Means notebook, and
 one of its cached warning outputs (cell 46) references
 `/usr/local/lib/python3.10/dist-packages/sklearn`, the characteristic path
 and Python version of a Google Colab runtime -- not a local Python 3.12.7
 venv. This matches the git history: every commit that substantively edited
-`seed_analysis_dbscan.ipynb` is titled "Created using Colab" (see
+`notebooks/seed_analysis_dbscan.ipynb` is titled "Created using Colab" (see
 Contributions below). Treat the DBSCAN notebook's saved outputs as having
 last been produced in Colab (Python 3.10), not locally, despite what its
 kernelspec metadata states.
@@ -123,9 +123,11 @@ The following are inferred from the notebooks' `import` statements:
    ```
    pip install pandas numpy scikit-learn matplotlib seaborn plotly packaging
    ```
-3. Launch Jupyter (`jupyter notebook` or `jupyter lab`) from the repository
-   root so the notebooks' relative path `dataset/seeds_dataset.csv`
-   resolves correctly.
+3. Launch Jupyter (`jupyter notebook` or `jupyter lab`) and open a notebook
+   under `notebooks/`. Jupyter sets each kernel's working directory to the
+   notebook's own directory, so the notebooks' relative path
+   `../data/seeds_dataset.csv` resolves correctly regardless of where the
+   Jupyter server itself was started from.
 4. Run either notebook top-to-bottom. No API keys, credentials, or network
    access are required.
 
@@ -149,7 +151,7 @@ A couple of things to know about this:
   in the repository under any circumstances.
 - **Re-executed metrics/plots may differ slightly from the committed
   output, and that is expected.** Every `KMeans(...)` call in
-  `seed_analysis_k_means.ipynb` and every `TSNE(...)` call in both
+  `notebooks/seed_analysis_k_means.ipynb` and every `TSNE(...)` call in both
   notebooks explicitly passes `random_state=42`, and DBSCAN itself has no
   random component (`DBSCAN(...)` takes no `random_state` parameter), so
   in principle a re-run on the same library versions should reproduce the
@@ -169,11 +171,11 @@ A couple of things to know about this:
 
 ### Dead Code
 
-1. **`dataset/converter.py`** -- A standalone TSV-to-CSV conversion
+1. **`data/converter.py`** -- A standalone TSV-to-CSV conversion
    utility (`convert_tsv_to_csv`) with a module-level "Example usage" call
    that runs `seeds_dataset.tsv` -> `seeds_dataset.csv` on import. It is
    never imported or referenced by either notebook; both notebooks read
-   `dataset/seeds_dataset.csv` directly, which is already committed to the
+   `data/seeds_dataset.csv` directly, which is already committed to the
    repo.
    - *Fix-it plan*: Either delete the script if the CSV is considered the
      canonical artifact and regeneration is never needed, or convert it
@@ -183,8 +185,8 @@ A couple of things to know about this:
      source.
 
 2. **Commented-out Google Colab drive-mount block** -- present in both
-   notebooks (`seed_analysis_k_means.ipynb`, cell 2;
-   `seed_analysis_dbscan.ipynb`, cell 3), each reading:
+   notebooks (`notebooks/seed_analysis_k_means.ipynb`, cell 2;
+   `notebooks/seed_analysis_dbscan.ipynb`, cell 3), each reading:
    ```python
    #from google.colab import drive
 
@@ -199,10 +201,10 @@ A couple of things to know about this:
    - *Fix-it plan*: Remove the dead block, or replace it with a live,
      minimal conditional mount (guarded by an `IN_COLAB` check) if Colab
      execution is still an intended use case; otherwise delete it since
-     both notebooks already load data from the local `dataset/` folder.
+     both notebooks already load data from the local `data/` folder.
 
 3. **Unfinished `predict_cluster` helper and usage example** --
-   `seed_analysis_k_means.ipynb`, cells 25-26. Cell 25 is a fully
+   `notebooks/seed_analysis_k_means.ipynb`, cells 25-26. Cell 25 is a fully
    commented-out function definition:
    ```python
    # def predict_cluster(new_data, pipeline):
@@ -224,7 +226,7 @@ A couple of things to know about this:
      assignment.
 
 4. **Commented-out `joblib` model-saving block** --
-   `seed_analysis_k_means.ipynb`, cell 27:
+   `notebooks/seed_analysis_k_means.ipynb`, cell 27:
    ```python
    # Optional: Save the models for later use
    # import joblib
@@ -245,7 +247,7 @@ A couple of things to know about this:
      do this safely.
 
 5. **Copy-paste bug in DBSCAN box-plot cells** --
-   `seed_analysis_dbscan.ipynb`, cell 18 duplicates cell 16
+   `notebooks/seed_analysis_dbscan.ipynb`, cell 18 duplicates cell 16
    (`plt.boxplot(class_dfs[0])`) instead of plotting the second class. The
    surrounding structure is:
    - Cell 16: `plt.boxplot(class_dfs[0])` -> followed by markdown cell 17,
@@ -269,7 +271,7 @@ A couple of things to know about this:
 ### Correctness Notes
 
 6. **DBSCAN hyperparameter search's scoring silently fails on every fold**
-   -- `seed_analysis_dbscan.ipynb`, cells 39-40 and 43. The grid search is
+   -- `notebooks/seed_analysis_dbscan.ipynb`, cells 39-40 and 43. The grid search is
    set up as:
    ```python
    grid_search = GridSearchCV(pipeline, param_grid, cv=5,
@@ -315,7 +317,7 @@ No security findings. Neither notebook contains hardcoded credentials or
 secrets, deserializes untrusted data (no `pickle.load` / `joblib.load` of
 any kind -- the only `joblib` reference is the dead, commented-out `dump`
 block described above), executes shell commands or subprocesses, or makes
-any network calls. All data is read from the local `dataset/` folder.
+any network calls. All data is read from the local `data/` folder.
 
 ## Status
 
@@ -339,20 +341,20 @@ This repository has two authors; `git log` shows a clear split by notebook:
 
 - **Daniel Leone** (GitHub: `dagron27`) created the repository, wrote
   `README.md`, `.gitignore`, `requirements.txt`, the `.github/workflows/ci.yml`
-  CI workflow, and `dataset/converter.py` plus the committed dataset files.
+  CI workflow, and `data/converter.py` plus the committed dataset files.
   He also authored the initial single-notebook scaffold, split it into the
   two current notebooks, and wrote substantially all of
-  **`seed_analysis_k_means.ipynb`** (the "K-means initial" commit alone adds
+  **`notebooks/seed_analysis_k_means.ipynb`** (the "K-means initial" commit alone adds
   ~2,400 lines), with a later follow-up commit ("Updated K-Means"). He also
   made one conflict-resolution pass on the DBSCAN notebook early on
   ("@bob changes to DBSCAN resolved").
 - **CLOR2003** (GitHub handle; commits are authored as `CLOR2003
   <93290045+CLOR2003@users.noreply.github.com>`) wrote substantially all of
-  **`seed_analysis_dbscan.ipynb`** (originally committed as
+  **`notebooks/seed_analysis_dbscan.ipynb`** (originally committed as
   `seed_analysis.ipynb`), across a series of "Created using Colab" commits
   totaling several thousand added/changed lines. CLOR2003's commits touch
   only that one notebook -- none of the README, `.gitignore`,
-  `requirements.txt`, CI workflow, or `dataset/` files were authored by
+  `requirements.txt`, CI workflow, or `data/` files were authored by
   CLOR2003.
 
 Because of this split authorship, the LICENSE file does not grant a blanket
