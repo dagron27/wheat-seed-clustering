@@ -1,0 +1,76 @@
+# Continuous integration workflow for the wheat seed clustering notebooks.
+#
+# This workflow re-executes both analysis notebooks end-to-end on every push
+# to catch broken cells, missing dependencies, or runtime errors before they
+# reach a reviewer. It intentionally never writes back to the committed
+# .ipynb files (see the "Execute" steps below) and it never commits anything
+# to the repository -- GitHub-hosted runners are ephemeral and are destroyed
+# after the job finishes, so nothing produced here can leak back into the
+# repo.
+name: CI
+
+# Run on every push, regardless of branch, and allow manual triggering from
+# the Actions tab.
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  run-notebooks:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Fetch the repository contents so the job has access to the
+      # notebooks, requirements.txt, and the dataset/ directory the
+      # notebooks read from via a relative path.
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Install a Python interpreter. The notebooks' embedded kernel
+      # metadata records Python 3.12.7 as the last-used version, so pin the
+      # minor version here to match as closely as possible.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Install the project's runtime dependencies (pandas, numpy,
+      # scikit-learn, matplotlib, seaborn, plotly, packaging) exactly as
+      # documented in the README's Environment Setup section.
+      - name: Install project dependencies
+        run: pip install -r requirements.txt
+
+      # requirements.txt does not include jupyter/nbconvert (they are not
+      # imported by the notebooks themselves, only needed to execute them
+      # headlessly here in CI), so install them separately.
+      - name: Install notebook execution tools
+        run: pip install jupyter nbconvert
+
+      # Create a scratch directory for notebook execution output. Writing
+      # executed copies here (instead of using --inplace) keeps the
+      # committed .ipynb files untouched -- nbconvert only reads the
+      # originals and never modifies them.
+      - name: Create scratch output directory
+        run: mkdir -p /tmp/nbconvert-out
+
+      # Execute the K-Means notebook top-to-bottom. --to notebook --execute
+      # runs every cell in a fresh kernel; --output-dir/--output redirect the
+      # executed result to a throwaway path instead of overwriting the
+      # source file (nbconvert's --output only accepts a filename, so the
+      # directory is set separately). nbconvert exits non-zero if any cell
+      # raises an error, which fails this step and the job.
+      - name: Execute K-Means notebook
+        run: |
+          jupyter nbconvert --to notebook --execute \
+            --output-dir /tmp/nbconvert-out \
+            --output seed_analysis_k_means.out.ipynb \
+            seed_analysis_k_means.ipynb
+
+      # Execute the DBSCAN notebook the same way, independently of the
+      # K-Means notebook (the two are self-contained per the README).
+      - name: Execute DBSCAN notebook
+        run: |
+          jupyter nbconvert --to notebook --execute \
+            --output-dir /tmp/nbconvert-out \
+            --output seed_analysis_dbscan.out.ipynb \
+            seed_analysis_dbscan.ipynb
