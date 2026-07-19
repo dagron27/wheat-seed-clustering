@@ -2,7 +2,43 @@
 
 ![CI](https://github.com/dagron27/se412-clustering/actions/workflows/ci.yml/badge.svg)
 
-**Assignment:** `se412-clustering-main` — SE 412.
+**Course:** `SE 412, Data Mining for Software Engineering, Fall 2025`
+
+**Assignment:** `se412-clustering` (group project)
+
+## Assignment Intent
+
+An iterative, multi-week group project structured around a series of
+report checkpoints (Introduction, Background/literature search, Experiment
+Design, Experiment Procedure, Results and Discussion, Conclusions,
+References), submitted as PDFs to D2L. The chosen topic: analyze the
+geometric properties of wheat kernels (the UCI seeds dataset) via feature
+engineering and clustering, aiming to identify feature groups that
+separate wheat varieties and that might correlate with productivity
+traits, using this as a case study for evaluating clustering algorithms on
+a real-world dataset with clear classes but subtle variation. The
+background research the author supplied cites literature on kernel-shape/
+productivity correlations (Bian et al. 2017; Xie et al. 2019) and on
+clustering technique comparisons, including "Complete Gradient Clustering"
+versus classical k-means. The final report(s) for these checkpoints are
+not currently available to verify the literature review/results sections
+against; this will be updated once they're located.
+
+**Confirmed implemented**, per the two notebooks (see Overview below):
+K-Means and DBSCAN clustering pipelines, both with EDA, outlier removal,
+PCA-based dimensionality reduction, hyperparameter search, and evaluation
+against the known variety labels via silhouette score and adjusted Rand
+index -- directly matching the stated goal of comparing clustering
+algorithms on this dataset.
+
+**One divergence worth noting:** the background research specifically
+references "Complete Gradient Clustering" as a comparison point against
+k-means. Neither notebook implements or references that algorithm anywhere
+in the code -- the actual comparison implemented is K-Means versus DBSCAN,
+not K-Means versus Complete Gradient Clustering. This may reflect a later
+narrowing of scope between the background-research checkpoint and the
+experiment-implementation checkpoint, or the comparison may exist in a
+report this repository doesn't currently include.
 
 ## Overview
 
