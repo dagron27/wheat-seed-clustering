@@ -20,9 +20,9 @@ a real-world dataset with clear classes but subtle variation. The
 background research the author supplied cites literature on kernel-shape/
 productivity correlations (Bian et al. 2017; Xie et al. 2019) and on
 clustering technique comparisons, including "Complete Gradient Clustering"
-versus classical k-means. The final report(s) for these checkpoints are
-not currently available to verify the literature review/results sections
-against; this will be updated once they're located.
+versus classical k-means. `docs/Report.docx` is now present in this
+repository; its literature review/results sections have not yet been
+cross-checked against the checkpoint structure described above.
 
 **Confirmed implemented**, per the two notebooks (see Overview below):
 K-Means and DBSCAN clustering pipelines, both with EDA, outlier removal,
