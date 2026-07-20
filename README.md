@@ -1,6 +1,6 @@
 # Wheat Seed Variety Clustering
 
-![CI](https://github.com/dagron27/se412-clustering/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/dagron27/wheat-seed-clustering/actions/workflows/ci.yml/badge.svg)
 
 **Course:** `SE 412, Data Mining for Software Engineering, Fall 2025`
 
