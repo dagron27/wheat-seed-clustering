@@ -100,6 +100,19 @@ Contributions below). Treat the DBSCAN notebook's saved outputs as having
 last been produced in Colab (Python 3.10), not locally, despite what its
 kernelspec metadata states.
 
+## Repository Organization
+
+The original submission had `dataset/seeds_dataset.csv` and both
+notebooks flat at the repository root. They have been reorganized into
+`notebooks/`, `data/`, and `docs/` for portfolio-wide consistency with
+sibling repositories. This required more than moving files: Jupyter and
+`nbconvert` execute a notebook with the notebook's own directory as the
+working directory, so the hardcoded relative-path string
+(`dataset/seeds_dataset.csv`) embedded inside both `.ipynb` files' JSON
+source had to be edited to `../data/seeds_dataset.csv` for the data
+load to keep resolving correctly -- see Environment Setup above for how
+this now works.
+
 ## Dependencies
 
 A `requirements.txt` is now included (`pip install -r requirements.txt`).
